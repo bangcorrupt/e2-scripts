@@ -1,6 +1,6 @@
 # e2
 
-Scripts for dealing electribe2 files.
+Scripts for dealing with electribe2 files.
 
 e2pat2syx.py - Converts a pattern file in e2pat format to a pattern file in sysex format.
 
