@@ -22,11 +22,11 @@ rot = int(args.rot)
 
 seqStart = partOff + (part * partLen) + seqOff
 seqEnd = seqStart + seqLen
-steps = pattern[seqStart:seqEnd] # maybe +1 ?
-cooked = rotate(steps, rot*stepLen)
+steps = pattern[seqStart:seqEnd]
+output = rotate(steps, rot*stepLen)
 
 for i in range(len(steps)):
-	pattern[i+seqStart] = cooked[i]
+	pattern[i+seqStart] = output[i]
 
 with open(args.outpath, 'wb') as f:
 	f.write(pattern)
