@@ -13,7 +13,7 @@ def main():
 		data =  bytearray(f.read())	
 	data = data[256:]
 
-	syxHead = bytearray([0xf0, 0x42, 0x37, 0x00, 0x01, 0x23, 0x40])		#	dump to current pattern
+	syxHead = bytearray([0xf0, 0x42, 0x30, 0x00, 0x01, 0x23, 0x40])		#	dump to current pattern
 	
 	if args.patNum:
 		patNum = int(args.patNum)-1
@@ -21,7 +21,7 @@ def main():
 		lsb = patNum % 128
 		if patNum > 127:
 			msb = 1
-		syxHead = bytearray([0xf0, 0x42, 0x37, 0x00, 0x01, 0x23, 0x4c, lsb, msb])	#	dump to patNum
+		syxHead = bytearray([0xf0, 0x42, 0x30, 0x00, 0x01, 0x23, 0x4c, lsb, msb])	#	dump to patNum
 		
 	bits = BitArray(bytes=data).bin		# convert to bitstring
 	byt = []
