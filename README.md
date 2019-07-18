@@ -12,4 +12,4 @@ e2seqrot.py - Rotates sequence of specified part by specified number of steps.  
 
 e2pat2all.py - Create allpatterns from a single pattern.
 
-e2ev.py - Split event recording by pattern, create stems, mute parts and extract patterns.
+e2ev.py - Split event recording by pattern, create stems, mute parts extract and replace patterns.
