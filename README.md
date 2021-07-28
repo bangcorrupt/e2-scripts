@@ -1,4 +1,4 @@
-# e2
+# e2-scripts
 
 Scripts for dealing with electribe2 files.
 
