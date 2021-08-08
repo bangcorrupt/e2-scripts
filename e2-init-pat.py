@@ -12,6 +12,7 @@ if len(sys.argv) < 3:
     print()
     exit()
 
+print('Supports Electribe 2 Sampler firmware version 2.02 only')
 
 vsb_path = sys.argv[1]
 if os.path.exists(vsb_path):
