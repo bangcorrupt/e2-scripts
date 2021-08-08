@@ -17,7 +17,7 @@ if os.path.exists(path):
     with open(path, 'rb') as f:
         hak = bytearray(f.read())
 
-    # e2s-e2
+    # e2
     hak[0x12] = 0x00
     hak[0x2e] = 0x23
 
