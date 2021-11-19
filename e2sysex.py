@@ -87,7 +87,7 @@ class E2Sysex:
         #self.port.send(msg)        
         #response = self.sysex_response()
         
-        # long sysex messages fails
+        # long sysex messages fail
         response = self.workaround_long_sysex(msg)
 
         if response[6] == 0x24:
@@ -128,7 +128,7 @@ class E2Sysex:
                                      [0x40] + 
                                      pattern)
         
-        # long sysex messages fails
+        # long sysex messages fail
         response = self.workaround_long_sysex(msg)
         
         # self.port.send(msg)
@@ -171,10 +171,9 @@ class E2Sysex:
     def get_global(self):
         msg =  Message('sysex', data=self.sysex_head+[0x1e])
         self.outport.send(msg)
-        
-        print('b4 response')
+
         response = self.sysex_response()
-        print('after response')
+
         if response[6] == 0x24:
             logging.warning('DATA LOAD ERROR: Global data dump request unsuccessful')
             return -1
@@ -201,8 +200,7 @@ class E2Sysex:
     def save_pattern(self, path, pattern, dest=None, raw=False):
         
         # write raw pattern data
-        if raw:
-            
+        if raw:            
             with open(path, 'wb') as f:
                 f.write(bytes(pattern))
             
@@ -272,6 +270,7 @@ class E2Sysex:
  
     # FIX - find a proper solution
     # ? can't send long sysex messages via ?mido/rtmidi?
+    #   alsa midi output buffer overrun?
     # works using amidi, but is very slow
     def workaround_long_sysex(self, msg):
         
@@ -287,6 +286,7 @@ class E2Sysex:
         return response
         
 
+    # val is list of sysex bytes
     def test_sysex_message(self, val):
 
         msg =  Message('sysex', data=self.sysex_head+val)
@@ -295,7 +295,7 @@ class E2Sysex:
 
         return response
 
-
+    # val is list of sysex bytes
     def test_long_sysex_message(self, val):
 
         msg =  Message('sysex', data=self.sysex_head+val)
