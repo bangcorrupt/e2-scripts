@@ -14,11 +14,6 @@ def main():
     logging.basicConfig(level=logging.DEBUG)
    
     e = E2Sysex()
-    
-    e.write_cpu_ram(0xc2000000, [0x41]*0x100)
-    
-    r = e.read_cpu_ram(0xc2000000, 0x200)
-    print([hex(i) for i in r])
 
 
 class E2Sysex:
