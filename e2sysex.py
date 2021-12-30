@@ -6,11 +6,19 @@ from subprocess import run
 from e2pat2syx import pat_to_syx
 from e2syx2pat import syx_to_pat
 
+from e2_syx_codec import syx_enc
+from e2_syx_codec import syx_dec
+
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
    
     e = E2Sysex()
+    
+    e.write_cpu_ram(0xc2000000, [0x41]*0x100)
+    
+    r = e.read_cpu_ram(0xc2000000, 0x200)
+    print([hex(i) for i in r])
 
 
 class E2Sysex:
@@ -304,6 +312,55 @@ class E2Sysex:
 
         return response
 
+    
+    # Read CPU RAM at address for length bytes
+    # Returns data as list of integer byte values
+    def read_cpu_ram(self, address, length):
+        
+        # Encode values as sysex
+        addr = address.to_bytes(4, byteorder='little')
+        leng = length.to_bytes(4, byteorder='little')
+        syx_al = syx_enc(addr+leng)
+        
+        # Send message
+        msg =  Message('sysex', data=self.sysex_head+[0x52]+syx_al)
+        self.outport.send(msg)
+        response = self.sysex_response()
+        
+        # Decode sysex response
+        byt_data = syx_dec(response[9:-1])
+       
+        return byt_data
+        
+    
+    # Write data to CPU RAM at address
+    # data is byte list
+    def write_cpu_ram(self, address, data):
+        
+        # First, set write address and length
+        # Encode values as sysex
+        addr = address.to_bytes(4, byteorder='little')
+        leng = len(data).to_bytes(4, byteorder='little')
+        syx_al = syx_enc(addr+leng)
+        
+        # Send first message
+        msg =  Message('sysex', data=self.sysex_head+[0x53]+syx_al)
+        self.outport.send(msg)
+        response = self.sysex_response()
+        # Ignore response for now
+        # UPDATE - test for success
+        
+        # Now send data to write
+        # Encode data as sysex
+        syx_dat = syx_enc(data)
+        
+        # Send final message
+        msg =  Message('sysex', data=self.sysex_head+[0x54]+syx_dat)
+        self.outport.send(msg)
+        response = self.sysex_response()
+        
+        return response
+        
 
 
 if __name__ == '__main__':
