@@ -14,6 +14,10 @@ def main():
     logging.basicConfig(level=logging.DEBUG)
    
     e = E2Sysex()
+    
+    g = e.get_groove(4)
+    e.add_groove(g)
+
 
 class E2Sysex:
     def __init__(self):
@@ -264,6 +268,7 @@ class E2Sysex:
         
         return response
     
+    
     # convert integer x <= 255 to midi bytes
     # returns little endian list of 7-bit bytes
     def int_to_midi(self, x):
@@ -297,6 +302,7 @@ class E2Sysex:
 
         return response
 
+
     # val is list of sysex bytes
     def test_long_sysex_message(self, val):
 
@@ -308,7 +314,7 @@ class E2Sysex:
 
     
     # Read CPU RAM at address for length bytes
-    # Returns data as list of integer byte values
+    # Returns data as bytearray
     def read_cpu_ram(self, address, length):
         
         # Encode values as sysex
@@ -324,7 +330,7 @@ class E2Sysex:
         # Decode sysex response
         byt_data = syx_dec(response[9:-1])
        
-        return byt_data
+        return bytearray(byt_data)
         
     
     # Write data to CPU RAM at address
@@ -361,7 +367,7 @@ class E2Sysex:
         
 
     # Get IFX preset from CPU RAM at index ifx_idx
-    # Returns preset as list of integer byte values
+    # Returns preset as bytearray
     # Uses get_cpu_ram for now
     # UPDATE - Add firmware hack for specific sysex function
     def get_ifx(self, ifx_idx):
@@ -382,6 +388,7 @@ class E2Sysex:
 
     
     # Set IFX preset in CPU RAM at index ifx_idx
+    # ifx is byte list
     # Uses write_cpu_ram for now
     # UPDATE - Add firmware hack for specific sysex function
     def set_ifx(self, ifx_idx, ifx):
@@ -405,7 +412,9 @@ class E2Sysex:
         
         return
         
+    
     # Add new IFX preset, increasing total count
+    # ifx is byte list
     def add_ifx(self, ifx):
          
         # Get current max IFX index
@@ -435,6 +444,73 @@ class E2Sysex:
         self.write_cpu_ram(0xc0098138, [ifx_idx+1])
  
         return
+
+    
+    # Get groove template from CPU RAM at index gv_idx
+    # Returns preset as list of bytearray
+    # Uses get_cpu_ram for now
+    # UPDATE - Add firmware hack for specific sysex function
+    def get_groove(self, gv_idx):
+        
+        if gv_idx > 127 or gv_idx < 0:
+            logging.warning('Groove index out of range - must be >= 0 & < 128.')
+            return
+        
+        # Calculate groove template address
+        gv_base = 0xc0143b00
+        gv_leng = 0x140
+        gv_addr = gv_base + gv_leng * gv_idx
+        
+        # Read groove template from CPU RAM
+        gv = self.read_cpu_ram(gv_addr, gv_leng)
+        
+        return gv
+
+    
+    # Set Groove template in CPU RAM at index gv_idx
+    # gv is byte list
+    # Uses write_cpu_ram for now
+    # UPDATE - Add firmware hack for specific sysex function
+    def set_groove(self, gv_idx, gv):
+        
+        if gv_idx > 127 or gv_idx < 0:
+            logging.warning('Groove index out of range - must be >= 0 & < 128.')
+            return
+        
+        # Calculate groove template address
+        gv_base = 0xc0143b00
+        gv_leng = 0x140
+        gv_addr = gv_base + gv_leng * gv_idx
+        
+        # Write Groove template from CPU RAM
+        self.write_cpu_ram(gv_addr, gv)
+        
+        return
+        
+    
+    # Add new groove template, increasing total count
+    # gv is byte list
+    def add_groove(self, gv):
+
+        # Get current max groove index
+        gv_idx = self.read_cpu_ram(0xc007bb88, 1)[0]
+
+        if gv_idx > 127 or gv_idx < 0:
+            logging.warning('Groove index out of range - must be >= 0 & < 128.')
+            return
+
+        # Set groove template data
+        self.set_groove(gv_idx, gv)
+
+        # Increase limits for menu and saved parameters
+        # UPDATE - Add firmware hack to set these values in one location
+        self.write_cpu_ram(0xc0049da4, [gv_idx])
+        self.write_cpu_ram(0xc007bb90, [gv_idx])
+        self.write_cpu_ram(0xc007bb88, [gv_idx+1])
+        self.write_cpu_ram(0xc007bb94, [gv_idx+1])
+
+        return
+
 
 if __name__ == '__main__':
     main()    
