@@ -350,13 +350,17 @@ class E2Sysex:
         
         # Send final message
         msg =  Message('sysex', data=self.sysex_head+[0x54]+syx_dat)
-        self.outport.send(msg)
-        response = self.sysex_response()
+        
+        if len(msg) > 0x200:
+            response = self.workaround_long_sysex(msg)
+        else:
+            self.outport.send(msg)
+            response = self.sysex_response()
         
         return response
         
 
-    # Get IFX preset at index ifx_idx
+    # Get IFX preset from CPU RAM at index ifx_idx
     # Returns preset as list of integer byte values
     # Uses get_cpu_ram for now
     # UPDATE - Add firmware hack for specific sysex function
@@ -375,6 +379,33 @@ class E2Sysex:
         ifx = self.read_cpu_ram(ifx_addr, ifx_leng)
         
         return ifx
+
+    
+    # Set IFX preset in CPU RAM at index ifx_idx
+    # Uses write_cpu_ram for now
+    # UPDATE - Add firmware hack for specific sysex function
+    def set_ifx(self, ifx_idx, ifx):
+        
+        if ifx_idx > 99 or ifx_idx < 0:
+            logging.warning('IFX index out of range - must be >= 0 & < 100.')
+            return
+        
+        # Calculate IFX preset address
+        ifx_base = 0xc00a80f0
+        ifx_leng = 0x20c
+        ifx_addr = ifx_base + ifx_leng * ifx_idx
+        
+        # Write IFX preset from CPU RAM
+        # Writing in two halves fails less often
+        ifx_a = ifx[:0x100]
+        self.write_cpu_ram(ifx_addr, ifx_a)
+        
+        ifx_b = ifx[0x100:]
+        self.write_cpu_ram(ifx_addr+0x100, ifx_b)
+        
+        return
+        
+
 
 if __name__ == '__main__':
     main()    
