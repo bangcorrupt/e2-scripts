@@ -15,7 +15,6 @@ def main():
    
     e = E2Sysex()
 
-
 class E2Sysex:
     def __init__(self):
         self.inport = mido.open_input('electribe2 sampler electribe2 s')
@@ -357,6 +356,25 @@ class E2Sysex:
         return response
         
 
+    # Get IFX preset at index ifx_idx
+    # Returns preset as list of integer byte values
+    # Uses get_cpu_ram for now
+    # UPDATE - Add firmware hack for specific sysex function
+    def get_ifx(self, ifx_idx):
+        
+        if ifx_idx > 99 or ifx_idx < 0:
+            logging.warning('IFX index out of range - must be >= 0 & < 100.')
+            return
+        
+        # Calculate IFX preset address
+        ifx_base = 0xc00a80f0
+        ifx_leng = 0x20c
+        ifx_addr = ifx_base + ifx_leng * ifx_idx
+        
+        # Read IFX preset from CPU RAM
+        ifx = self.read_cpu_ram(ifx_addr, ifx_leng)
+        
+        return ifx
 
 if __name__ == '__main__':
     main()    
