@@ -405,7 +405,36 @@ class E2Sysex:
         
         return
         
+    # Add new IFX preset, increasing total count
+    def add_ifx(self, ifx):
+         
+        # Get current max IFX index
+        ifx_idx = self.read_cpu_ram(0xc003efdc, 1)[0]
 
+        if ifx_idx > 99 or ifx_idx < 0:
+            logging.warning('IFX index out of range - must be >= 0 & < 100.')
+            return
+
+        # Set IFX preset data
+        self.set_ifx(ifx_idx, ifx)
+        
+        # Increase limits for menu and saved parameters
+        # UPDATE - Add firmware hack to set these values in one location
+        self.write_cpu_ram(0xc003efdc, [ifx_idx+1])
+        self.write_cpu_ram(0xc0048f80, [ifx_idx])
+        self.write_cpu_ram(0xc0049ef0, [ifx_idx])
+        self.write_cpu_ram(0xc004a1f8, [ifx_idx])
+        self.write_cpu_ram(0xc009814c, [ifx_idx])
+        self.write_cpu_ram(0xc0098150, [ifx_idx+1])
+        self.write_cpu_ram(0xc0098188, [ifx_idx])
+        self.write_cpu_ram(0xc0098194, [ifx_idx+1])
+        self.write_cpu_ram(0xc00980e8, [ifx_idx])
+        self.write_cpu_ram(0xc00980ec, [ifx_idx+1])
+        self.write_cpu_ram(0xc009809c, [ifx_idx+1])
+        self.write_cpu_ram(0xc009811c, [ifx_idx+1])
+        self.write_cpu_ram(0xc0098138, [ifx_idx+1])
+ 
+        return
 
 if __name__ == '__main__':
     main()    
