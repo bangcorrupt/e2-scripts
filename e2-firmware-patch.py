@@ -10,7 +10,7 @@ def main():
     parser.add_argument("-d", "--dst", dest='dst_path', help="path/to/destination/hacked-SYSTEM.VSB")
     parser.add_argument("-p", "--patch", dest='patch_path', help="path/to/hacktribe-2.patch")
     parser.add_argument("-e", "--edit-header", dest='edit_header', action='store_true', help="Edit file header to allow install on e2 synth.")
-    parser.set_defaults(feature=False)
+    parser.set_defaults(edit_header=False)
     
     args = parser.parse_args()
 
