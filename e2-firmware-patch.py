@@ -83,7 +83,7 @@ def main():
     else:
         print('Destination file hash'.ljust(32, ' '), ':', dst_hash, '\n')
         print('Firmware patched successfully.\n')
-        print("Copy 'hacked-SYSTEM.VSB' to 'SD:/" +sd_path+ "' and update firmware.\n") 
+        print("Copy '" +dst_path+ "' to 'SD:/" +sd_path+ "' and update firmware.\n") 
 
 
 
@@ -91,7 +91,7 @@ def modify_header(path):
     with open(path, 'rb') as f:
         hak = bytearray(f.read())
 
-    print('Modifying header', path)
+    print('Modifying header of', path, '...\n')
     
     # e2
     hak[0x12] = 0x00
