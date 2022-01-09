@@ -75,22 +75,20 @@ class E2Sysex:
             data = response [9:-1]
 
 
-            logging.info(type(data))
-            return syx_to_pat(data)
+            return bytes(data)
 
     
     # send pattern to device
-    # pattern is pattern file as bytearray
+    # pattern is pattern file as list of sysex bytes
     # dest is pattern number (0-249)
     # returns SysEx response code
     def set_pattern(self, dest, pattern):
-        
-        syx_pat = syx_enc(pattern[0x100:]) #pat_to_syx(pattern, pat_num=dest)[9:-1]
+
         
         msg =  Message('sysex', data=self.sysex_head + 
                                      [0x4C] + 
                                      self.int_to_midi(dest) + 
-                                     syx_pat)
+                                     pattern)
 
         #self.port.send(msg)        
         #response = self.sysex_response()
@@ -124,19 +122,18 @@ class E2Sysex:
             logging.info('CURRENT PATTERN DATA DUMP: Current pattern dump request successful')
             
             data = response[7:-1]
-            return syx_to_pat(data)
+            return bytes(data)
         
     
     # send pattern to device edit buffer
-    # pattern is pattern file
+    # pattern is pattern file as sysex bytes
     # returns SysEx response code
     def set_current_pattern(self, pattern):
         
-        syx_pat = pat_to_syx(pattern)
         
         msg =  Message('sysex', data=self.sysex_head + 
                                      [0x40] + 
-                                     syx_pat)
+                                     pattern)
         
         # long sysex messages fail
         response = self.workaround_long_sysex(msg)
@@ -161,7 +158,7 @@ class E2Sysex:
     
     # helper function, uses get_pattern
     # get all patterns from device
-    # returns list of pattern files as bytearrays
+    # returns list of pattern files as sysex bytes
     def get_all_patterns(self):
         
         return [self.get_pattern(i) for i in range(250)]
@@ -177,7 +174,7 @@ class E2Sysex:
 
 
     # get global settings
-    # returns settings as bytearray
+    # returns settings as sysex bytes
     def get_global(self):
         msg =  Message('sysex', data=self.sysex_head+[0x1e])
         self.outport.send(msg)
@@ -192,7 +189,7 @@ class E2Sysex:
             logging.info('CURRENT PATTERN DATA DUMP: Global data dump request successful')
             
             data = response[7:-1]
-            return syx_dec(data)
+            return bytes(data)
     
  
     

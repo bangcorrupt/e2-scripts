@@ -35,7 +35,7 @@ def syx_to_pat(syx_data):
                b'electribe'.ljust(16, b'\x00') +
                b'\x01\x00\x00\x00'.ljust(224, b'\xff')
                     
-    pat_data = pat_head + bytearray(syx_dec(syx_data))
+    pat_data = pat_head + syx_dec(syx_data)
     
     return pat_data
 

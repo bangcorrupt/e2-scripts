@@ -36,7 +36,7 @@ def pat_to_syx(pat_data, pat_num=False):
     
     data = pat_data[0x100:]
 
-    syx_head = [0xf0, 0x42, 0x30, 0x00, 0x01, 0x23, 0x40]                 # dump to current pattern
+    bytearray(syx_head = [0xf0, 0x42, 0x30, 0x00, 0x01, 0x23, 0x40])                 # dump to current pattern
 
     if pat_num:
         pat_num = int(pat_num)-1
@@ -44,11 +44,9 @@ def pat_to_syx(pat_data, pat_num=False):
         lsb = pat_num % 128
         if pat_num > 127:
             msb = 1
-        syx_head = [0xf0, 0x42, 0x30, 0x00, 0x01, 0x23, 0x4c, lsb, msb]   # dump to patNum
-        
-    syx_tail = [0xf7]
+        syx_head = bytearray([0xf0, 0x42, 0x30, 0x00, 0x01, 0x23, 0x4c, lsb, msb])   # dump to patNum
 
-    syx_data = syx_head + syx_enc(data) + syx_tail
+    syx_data = syx_head + syx_enc(data) + b'\xf7'
 
     return syx_data
 
