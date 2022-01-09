@@ -12,7 +12,7 @@ def main():
     groove.name = "Test groove 1"
     
     # Set groove loop length (re-triggers on pattern loop)
-    groove.length = 16
+    groove.length = 13
     
     # Move 5th step forward half a step
     groove.edit_step(4, 'trigger', 48)

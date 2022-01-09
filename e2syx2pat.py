@@ -31,12 +31,11 @@ def main():
 
 def syx_to_pat(syx_data):
     
-    pat_head = bytearray(b'\x4b\x4f\x52\x47' + b'\x00' * 12 + 
-                    b'\x65\x6c\x65\x63\x74\x72\x69\x62\x65' +
-                    b'\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00' + 
-                    b'\xff' * 220)
+    pat_head = b'KORG'.ljust(16, b'\x00') + 
+               b'electribe'.ljust(16, b'\x00') +
+               b'\x01\x00\x00\x00'.ljust(224, b'\xff')
                     
-    pat_data = pat_head + syx_dec(syx_data)
+    pat_data = pat_head + bytearray(syx_dec(syx_data))
     
     return pat_data
 

@@ -14,9 +14,7 @@ def main():
     logging.basicConfig(level=logging.DEBUG)
    
     e = E2Sysex()
-    
-    g = e.get_groove(4)
-    e.add_groove(g)
+
 
 
 class E2Sysex:
@@ -76,19 +74,23 @@ class E2Sysex:
             
             data = response [9:-1]
 
-            return bytes(data)
+
+            logging.info(type(data))
+            return syx_to_pat(data)
 
     
     # send pattern to device
-    # pattern is pattern data as list of sysex bytes
+    # pattern is pattern file as bytearray
     # dest is pattern number (0-249)
     # returns SysEx response code
     def set_pattern(self, dest, pattern):
         
+        syx_pat = syx_enc(pattern[0x100:]) #pat_to_syx(pattern, pat_num=dest)[9:-1]
+        
         msg =  Message('sysex', data=self.sysex_head + 
                                      [0x4C] + 
                                      self.int_to_midi(dest) + 
-                                     pattern)
+                                     syx_pat)
 
         #self.port.send(msg)        
         #response = self.sysex_response()
@@ -122,17 +124,19 @@ class E2Sysex:
             logging.info('CURRENT PATTERN DATA DUMP: Current pattern dump request successful')
             
             data = response[7:-1]
-            return bytes(data)
+            return syx_to_pat(data)
         
     
     # send pattern to device edit buffer
-    # pattern is pattern file as sysex bytes
+    # pattern is pattern file
     # returns SysEx response code
     def set_current_pattern(self, pattern):
         
+        syx_pat = pat_to_syx(pattern)
+        
         msg =  Message('sysex', data=self.sysex_head + 
                                      [0x40] + 
-                                     pattern)
+                                     syx_pat)
         
         # long sysex messages fail
         response = self.workaround_long_sysex(msg)
@@ -157,7 +161,7 @@ class E2Sysex:
     
     # helper function, uses get_pattern
     # get all patterns from device
-    # returns list of patterns as sysex bytes
+    # returns list of pattern files as bytearrays
     def get_all_patterns(self):
         
         return [self.get_pattern(i) for i in range(250)]
@@ -173,7 +177,7 @@ class E2Sysex:
 
 
     # get global settings
-    # returns settings as sysex bytes
+    # returns settings as bytearray
     def get_global(self):
         msg =  Message('sysex', data=self.sysex_head+[0x1e])
         self.outport.send(msg)
@@ -188,7 +192,7 @@ class E2Sysex:
             logging.info('CURRENT PATTERN DATA DUMP: Global data dump request successful')
             
             data = response[7:-1]
-            return bytes(data)
+            return syx_dec(data)
     
  
     
@@ -198,67 +202,8 @@ class E2Sysex:
     def set_global(self, settings):
         logging.info('SET GLOBAL DATA: Not implemented yet')
 
-    
-    # writes pattern to local sysex file
-    # pattern is pattern data as list of sysex bytes
-    # dest is pattern number on device
-    # raw writes only data without sysex header 
-    def save_pattern(self, path, pattern, dest=None, raw=False):
-        
-        # write raw pattern data
-        if raw:            
-            with open(path, 'wb') as f:
-                f.write(bytes(pattern))
-            
-            return 0
 
-        # write pattern dump sysex
-        if dest != None:
-            logging.info('SAVE PATTERN: Saving pattern ' + str(dest))  
-            syx = self.sysex_head +  [0x4C] +  self.int_to_midi(dest) + pattern
-            
-            with open(path, 'wb') as f:
-                f.write(bytes(syx))
-            
-            return 0
-        
-        # write current pattern dump sysex
-        else:
-            logging.info('SAVE PATTERN: Saving current pattern')
-            syx = self.sysex_head + [0x40] + pattern
-
-            with open(path, 'wb') as f:
-                    f.write(bytes(syx))
-
-            return 0
-    
-    
-    # loads pattern data from local file
-    # returns sysex bytes
-    # convert flag converts from e2pat format to sysex
-    # header flag returns bytes with existing sysex header and tail
-    # otherwise return only pattern data as sysex bytes
-    def load_pattern(self, path, convert=False, header=False):
-        
-        logging.info('Loading pattern data from file')
-        
-        with open(path, 'rb') as f:
-            data = f.read()
-        
-        if convert:
-            return pat_to_syx(data[256:])
-                    
-        elif header:
-            return data
-        
-        elif syx[6] == 0x40:
-            return data[7:-1]
-        
-        elif syx[6] == 0x4C:
-            return data[9:-1]
-
-    
-    
+  
     def sysex_response(self):
         
         for msg in self.inport:
