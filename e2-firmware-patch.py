@@ -63,7 +63,7 @@ def main():
     else:
         print('Electribe 2 Sampler firmware version 2.02 found.\n')
 
-    print('Patching firmware for ' +device+ '...')
+    print('Patching firmware for ' +device+ '...\n')
 
     file_patch(src_path, dst_path, patch_path)
 
@@ -91,7 +91,7 @@ def modify_header(path):
     with open(path, 'rb') as f:
         hak = bytearray(f.read())
 
-    print('Modifying header of', path, '...\n')
+    print("Modifying header of '" +path+ "'...\n")
     
     # e2
     hak[0x12] = 0x00
