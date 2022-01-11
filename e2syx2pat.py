@@ -31,9 +31,9 @@ def main():
 
 def syx_to_pat(syx_data):
     
-    pat_head = b'KORG'.ljust(16, b'\x00') + 
+    pat_head = (b'KORG'.ljust(16, b'\x00') + 
                b'electribe'.ljust(16, b'\x00') +
-               b'\x01\x00\x00\x00'.ljust(224, b'\xff')
+               b'\x01\x00\x00\x00'.ljust(224, b'\xff'))
                     
     pat_data = pat_head + syx_dec(syx_data)
     
