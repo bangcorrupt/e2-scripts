@@ -1,0 +1,83 @@
+electribe 2 event recording file format
+
+list of 16 byte event messages
+time is delta time in ms
+
+for control events:
+	byte[4] 	= 	1
+	byte[6] 	= 	channel
+	byte[8] 	= 	parameter
+	byte[12:13] = 	value
+
+for note events:
+	byte[4] 	=	0
+	byte[8]		=	note On or Off : channel
+	byte[9] 	=	note number
+	byte[10]	=	velocity
+	byte[11]	=	1
+
+
+checksum in header at byte[260] is (file_size - 288)
+
+
+channel control:
+[	0	|	1	|	2	|	3	|	4	|	5	|	6	|	7	|	8	|	9	|	10	|	11	|	12	|	13	|	14	|	15	]
+---------------------------------------------------------------------------------------------------------------------------------
+[ time	| time	| null	| null	| 	01	| null  | chan	| null	| param	| null	|	FF	| 	FF 	|	lsb	|	msb	| null	| null	]
+[-------------------------------------------------------------------------------------------------------------------------------]
+
+
+pattern control:
+[	0	|	1	|	2	|	3	|	4	|	5	|	6	|	7	|	8	|	9	|	10	|	11	|	12	|	13	|	14	|	15	]
+---------------------------------------------------------------------------------------------------------------------------------
+[ time	| time	| null	| null	| 	01	| null	|  00	| null	| param	| null	|	FF	| 	FF 	|	lsb	|	msb	| null	| null	]
+[-------------------------------------------------------------------------------------------------------------------------------]
+
+
+note event:
+[	0	|	1	|	2	|	3	|	4	|	5	|	6	|	7	|	8	|	9	|	10	|	11	|	12	|	13	|	14	|	15	]
+---------------------------------------------------------------------------------------------------------------------------------
+[ time	| time	| null	| null	| 	00	| null	| null	| null	|onof:ch| note  |	vel	| 	01  |  null	|  null	| null	| null	]
+[-------------------------------------------------------------------------------------------------------------------------------]
+
+
+ev control change parameter numbers
+
+pattern parameters:
+
+tempo			00
+pattern level	01	
+mfx pad touched	02		
+mfx type		03
+mfx x			04	
+mfx y			05			
+mfx hold		06	
+alt 13/14		07
+alt 15/16		08
+
+
+part parameters:
+
+mono / poly		13
+motion type		14
+priority		17
+osc type		18		0x00 - 0x198
+osc pitch 		1a		x40 < x00 < x3f		-64 < 0 < 63
+glide			1b											
+osc edit		1c		
+filtype			1d												
+filter cut 		1e
+res 			1f
+eg				20
+mod type		21		0x00 - 0x47
+mod sp			22
+mod depth		23
+attack			24
+decay			25		
+lev				26
+pan				27
+ampegon			28	
+mfxsend			29
+ifx type		2a		0x00 - 0x25
+ifx edit		2b
+ifxon			2c
