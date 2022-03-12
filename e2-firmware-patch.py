@@ -78,13 +78,13 @@ def main():
         print('Destination file hash'.ljust(32, ' '), ':', dst_hash, '\n')
         print('ERROR: Patch FAILED.')
         print('Do not install modified firmware.\n')
-        exit()
+        exit(1)
 
     else:
         print('Destination file hash'.ljust(32, ' '), ':', dst_hash, '\n')
         print('Firmware patched successfully.\n')
         print("Copy '" +dst_path+ "' to 'SD:/" +sd_path+ "' and update firmware.\n") 
-
+        exit(0)
 
 
 def modify_header(path):
