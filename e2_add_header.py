@@ -38,7 +38,7 @@ def main():
     if args.dst_path:
         dst_path = args.dst_path
     else:
-        dst_path = 'hacked-SYSTEM.VSB'
+        dst_path = 'test.hacktribe.SYSTEM.VSB'
 
     with open(src_path, 'rb') as f:
         src_bin = f.read()
