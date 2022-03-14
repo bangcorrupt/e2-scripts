@@ -1,5 +1,9 @@
 # e2-scripts
 
+__Archived: Moved permanently to https://github.com/bangcorrupt/hacktribe/tree/master/scripts.__
+
+<br/>
+
 Scripts for dealing with electribe2 files.
 
 Support:
