@@ -1,6 +1,6 @@
 # e2-scripts
 
-__Archived: Moved permanently to https://github.com/bangcorrupt/hacktribe/tree/master/scripts.__
+__Archived: Moved permanently to https://github.com/bangcorrupt/hacktribe/tree/main/scripts.__
 
 <br/>
 
